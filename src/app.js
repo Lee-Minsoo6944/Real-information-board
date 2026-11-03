@@ -1,5 +1,5 @@
-import { weekSummary, fmtWeek } from './week.js'; // 최상단 import 부근에 추가
-import { SOURCE, TZ, ERROR_TEXT, resetState, comparisonFor, fmtComparison, fmtKst, normalizeOpenMeteo } from './core.js';
+import { weekSummary, fmtWeek } from './week.js';
+import { SOURCE, TZ, ERROR_TEXT, resetState, comparisonFor, fmtComparison, fmtKst, kstDate, normalizeOpenMeteo } from './core.js';
 import { liveAttempt, replayAttempt } from './adapter.js';
 import { loadPackage } from './package.js';
 import { checkExpected, runSelfTests } from './selftest.js';
@@ -83,7 +83,7 @@ async function initLive() {
 // ── ② 실제 일별 기록 ─────────────────────────────
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
-async function renderDaily() {}
+async function renderDaily() {
   const rows = dailyDb.daily_readings;
   const checks = await Promise.all(rows.map(async (r) => {
     try {
@@ -119,16 +119,10 @@ async function renderDaily() {}
   const last = rows.at(-1);
   const c = last ? comparisonFor(rows, last) : null;
   const f = fmtComparison(c);
-  
-  // ── [추가] 최근 7일 요약 계산 및 화면 연결 (T05-W10 / 화면 요구사항) ──
-  const weekEl = document.getElementById('week');
-  if (weekEl) {
-    // dailyDb.daily_readings (rows)와 오늘 날짜(kstDate 등 활용 또는 현지 날짜 기준)를 전달
-    const todayStr = last ? last.record_date : new Date().toISOString().slice(0, 10); 
-    const summary = weekSummary(rows, todayStr);
-    weekEl.textContent = fmtWeek(summary);
-  }
-  // -----------------------------------------------------------------
+
+  // 최근 7일 요약 (과제 5): today = 페이지를 연 시각의 한국 날짜
+  const weekEl = $('#week');
+  if (weekEl) weekEl.textContent = fmtWeek(weekSummary(rows, kstDate(new Date())));
 
   if (!f) {
     el.innerHTML = `<div class="change-wait"><b>${last ? '두 번째' : '첫'} 실제 날짜 기록을 기다리는 중</b>
@@ -141,6 +135,7 @@ async function renderDaily() {}
       <div class="change-calc">계산: ${c.to.record_date} 값 ${c.to.normalized_value} − ${c.from.record_date} 값 ${c.from.normalized_value} = ${c.direction === 'decrease' ? '−' : ''}${c.magnitude} ${esc(c.unit)}</div>
     </div>`;
   }
+}
 
 // ── ③ 공개 꾸러미 ────────────────────────────────
 let pkg = null;
