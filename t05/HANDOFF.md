@@ -30,6 +30,8 @@ cd t05-work
 python -m http.server 8000
 ```
 
+- Windows 에서 `python` 이 "Microsoft Store" 안내만 띄우면 `py -m http.server 8000` 을 쓰세요.
+
 - 검사: 브라우저로 `http://localhost:8000/t05/checks.html` → 맨 위 `n/10 PASS`
 - 검사(Node 있을 때): `node t05/run-checks.mjs` → 마지막 줄 `합계 n/10 PASS`
 - 화면: `http://localhost:8000/` → ② 일별 기록 칸
