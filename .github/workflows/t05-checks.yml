@@ -1,0 +1,14 @@
+name: t05 fixed checks
+on:
+  push:
+    paths: ['src/**', 't05/**', '.github/workflows/t05-checks.yml']
+  workflow_dispatch:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node t05/run-checks.mjs
