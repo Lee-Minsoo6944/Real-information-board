@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고정 검사 10개</title>
+<style>
+  :root { --bg:#f6f7f9; --fg:#1b1f24; --muted:#5b6470; --card:#fff; --line:#d8dde3; --ok:#1a7f37; --bad:#c62828; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14181d; --fg:#e6e9ed; --muted:#9aa4af; --card:#1d232a; --line:#2e3640; --ok:#4cc26a; --bad:#ff6b6b; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 system-ui, "Malgun Gothic", sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .muted { color: var(--muted); }
+  #sum { font-size: 28px; font-weight: 700; margin: 16px 0 4px; }
+  #sum.ok { color: var(--ok); } #sum.bad { color: var(--bad); }
+  .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td code { white-space: pre-wrap; word-break: break-all; }
+  .PASS { color: var(--ok); font-weight: 700; } .FAIL { color: var(--bad); font-weight: 700; }
+  textarea { width: 100%; height: 140px; font: 12px/1.4 ui-monospace, monospace; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; }
+  button { font: inherit; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+  code.hash { word-break: break-all; }
+</style>
+</head>
+<body>
+<main>
+  <h1>과제 5 · 고정 검사 10개</h1>
+  <p class="muted">기능: 대전 기온 정보판 "최근 7일 요약" (<code>src/week.js</code>). 검사 원문: <a href="checks.js">t05/checks.js</a> · 규칙: <a href="PLAN.md">t05/PLAN.md</a></p>
+  <div id="sum" data-testid="t05-sum">실행 중…</div>
+  <p class="muted">실행 시각 <span id="at"></span> · checks.js SHA-256 <code class="hash" id="hash"></code></p>
+  <p><button id="again">다시 실행</button></p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>결과</th><th>ID</th><th>내용</th><th>기대값</th><th>실제값</th></tr></thead>
+      <tbody id="out"></tbody>
+    </table>
+  </div>
+  <h2 style="font-size:16px;margin-top:24px">결과 기록용 JSON</h2>
+  <p class="muted">이 내용을 <code>t05/results/</code> 에 저장하면 실행 회차 기록이 됩니다.</p>
+  <textarea id="json" readonly></textarea>
+</main>
+<script type="module">
+import { runChecks, summarize, checksHash } from './run.js';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+async function go() {
+  const results = await runChecks();
+  const s = summarize(results);
+  const hash = await checksHash(await (await fetch(`checks.js?t=${Date.now()}`, { cache: 'no-store' })).text());
+  const at = new Date().toISOString();
+  $('#sum').textContent = `${s.passed}/${s.total} PASS`;
+  $('#sum').className = s.any_fail ? 'bad' : 'ok';
+  $('#at').textContent = at;
+  $('#hash').textContent = hash;
+  $('#out').innerHTML = results.map((r) => `<tr data-id="${r.id}">
+    <td class="${r.pass ? 'PASS' : 'FAIL'}">${r.pass ? 'PASS' : 'FAIL'}</td><td>${r.id}</td><td>${esc(r.title)}</td>
+    <td><code>${esc(JSON.stringify(r.expected))}</code></td>
+    <td><code>${esc(r.error ? `오류 — ${r.error}` : JSON.stringify(r.actual))}</code></td></tr>`).join('');
+  $('#json').value = JSON.stringify({ run_at: at, checks_sha256: hash, ...s, results: results.map(({ id, pass, actual, error }) => ({ id, pass, actual, error })) }, null, 2);
+}
+$('#again').onclick = go;
+go();
+</script>
+</body>
+</html>

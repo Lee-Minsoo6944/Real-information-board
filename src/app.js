@@ -1,5 +1,4 @@
-import { weekSummary, fmtWeek } from './week.js';
-import { SOURCE, TZ, ERROR_TEXT, resetState, comparisonFor, fmtComparison, fmtKst, kstDate, normalizeOpenMeteo } from './core.js';
+import { SOURCE, TZ, ERROR_TEXT, resetState, comparisonFor, fmtComparison, fmtKst, normalizeOpenMeteo } from './core.js';
 import { liveAttempt, replayAttempt } from './adapter.js';
 import { loadPackage } from './package.js';
 import { checkExpected, runSelfTests } from './selftest.js';
@@ -119,11 +118,6 @@ async function renderDaily() {
   const last = rows.at(-1);
   const c = last ? comparisonFor(rows, last) : null;
   const f = fmtComparison(c);
-
-  // 최근 7일 요약 (과제 5): today = 페이지를 연 시각의 한국 날짜
-  const weekEl = $('#week');
-  if (weekEl) weekEl.textContent = fmtWeek(weekSummary(rows, kstDate(new Date())));
-
   if (!f) {
     el.innerHTML = `<div class="change-wait"><b>${last ? '두 번째' : '첫'} 실제 날짜 기록을 기다리는 중</b>
       <p>${last ? `지금은 ${esc(last.record_date)} 한 건뿐입니다.` : '아직 저장된 실제 기록이 없습니다.'} 기록은 매일 09:00 KST 에 자동 조회로 쌓이며, 비교값을 만들려고 기록을 꾸며 넣지 않습니다.</p></div>`;
