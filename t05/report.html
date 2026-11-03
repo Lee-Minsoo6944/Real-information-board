@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>과제 5 비교 보고서</title>
+<style>
+  :root { --bg:#f6f7f9; --fg:#1b1f24; --muted:#5b6470; --card:#fff; --line:#d8dde3; --ok:#1a7f37; --bad:#c62828; --warn:#9a6700; --accent:#1f5fae; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14181d; --fg:#e6e9ed; --muted:#9aa4af; --card:#1d232a; --line:#2e3640; --ok:#4cc26a; --bad:#ff6b6b; --warn:#e3b341; --accent:#7fb2ff; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.6 system-ui, "Malgun Gothic", sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 28px 16px 64px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 36px 0 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+  h3 { font-size: 15px; margin: 18px 0 6px; }
+  a { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 600; white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; }
+  code { font: 12.5px ui-monospace, Consolas, monospace; word-break: break-all; }
+  .ok { color: var(--ok); font-weight: 700; } .bad { color: var(--bad); font-weight: 700; } .warn { color: var(--warn); font-weight: 700; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  ol.steps { margin: 0; padding-left: 20px; }
+  dl.four { display: grid; grid-template-columns: 9em 1fr; gap: 6px 12px; margin: 0; }
+  dl.four dt { font-weight: 600; } dl.four dd { margin: 0; }
+  @media (max-width: 560px) { dl.four { grid-template-columns: 1fr; } dl.four dd { margin-bottom: 8px; } }
+  .rule { font-size: 16px; font-weight: 600; }
+  details summary { cursor: pointer; color: var(--accent); }
+  pre { white-space: pre-wrap; word-break: break-word; font: 12.5px/1.5 ui-monospace, Consolas, monospace; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>과제 5 · 대화가 끊겨도 이어지는 프로젝트</h1>
+  <p class="muted">대전 기온 정보판(과제 4)에 "최근 7일 요약"을 AI A → AI B 순서로 이어서 완성했습니다. 이 보고서에는 고정 검사·집계 결과·인수인계 문서·본인 판단만 남기고 대화 전문은 넣지 않았습니다.</p>
+
+  <h2 id="check">짧은 확인 방법</h2>
+  <div class="card">
+    <dl class="four">
+      <dt>① 어디로 가나요</dt>
+      <dd><a href="checks.html">t05/checks.html</a> (고정 검사 실행 페이지)와 <a href="../#h-daily">정보판 ② 일별 기록</a></dd>
+      <dt>② 무엇을 하나요</dt>
+      <dd>1) 검사 페이지를 엽니다 → 2) 맨 위 숫자를 봅니다 → 3) 정보판 ② 일별 기록 표 아래 한 줄을 봅니다</dd>
+      <dt>③ 통과 모습</dt>
+      <dd>초록색 <b>10/10 PASS</b>, 지문 <code>f3711bb7…cd1</code>, 정보판에 <b>"최저 … °C · 최고 … °C · 평균 … °C · 7일 중 n일 기록"</b></dd>
+      <dt>④ 안 될 때 모습</dt>
+      <dd>빨간 <b>n/10 PASS</b>와 FAIL 행(기대값·실제값 나란히), 또는 정보판에 "최근 7일 기록 없음"·일별 기록 0건</dd>
+    </dl>
+  </div>
+
+  <h2 id="fixed">1. 작업 전에 고정한 것</h2>
+  <p>고정 시각 2026-11-03 14:02 KST · 고정 커밋 <code>e9463b2</code> · 검사 원문 <a href="checks.js">t05/checks.js</a> (SHA-256 <code>f3711bb7375f7c5db4926536222d673cc654f49afc7eaf7464e04784cf54ecd1</code>) · 규칙 <a href="PLAN.md">t05/PLAN.md</a></p>
+  <div class="grid">
+    <div class="card"><b>공통 시간 상한</b><br>AI마다 <b>60분</b> (시작 기록 → 종료 기록)</div>
+    <div class="card"><b>공통 요청 수 상한</b><br>AI마다 <b>12회</b> (사람이 보낸 메시지 수, 최초 요청 포함)</div>
+    <div class="card"><b>A·B 같은 최초 요청</b><br><span class="muted">"최근 7일 요약 기능을 완성해 주세요 … t05/ 검사·계획 파일은 고치지 마세요. 완료 기준은 10/10 PASS 와 화면의 요약 한 줄"</span> (전문: PLAN 4절)</div>
+  </div>
+
+  <h3>고정 검사 10개</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>ID</th><th>입력 (today · rows)</th><th>관찰 가능한 기대값</th></tr></thead>
+    <tbody>
+      <tr><td>T05-W01</td><td>2026-11-03 · 없음</td><td>state <code>empty</code>, count 0, min/max/avg null, from 2026-10-28, to 2026-11-03</td></tr>
+      <tr><td>T05-W02</td><td>2026-11-03 · 11-03 12.3</td><td><code>ok</code>, count 1, 최저=최고=12.3, 평균 12.3</td></tr>
+      <tr><td>T05-W03</td><td>2026-11-03 · 11-01 14.2, 11-02 9.8, 11-03 11.5, 다른 signal 99.9</td><td>count 3, 최저 9.8(11-02), 최고 14.2(11-01), 평균 11.8</td></tr>
+      <tr><td>T05-W04</td><td>2026-11-03 · 10-28 5.0, 11-03 7.0</td><td>경계 포함: count 2, 최저 5(10-28), 평균 6</td></tr>
+      <tr><td>T05-W05</td><td>2026-11-03 · 10-27 1.0, 11-03 7.0</td><td>경계 제외: count 1, 최저=최고=7</td></tr>
+      <tr><td>T05-W06</td><td>2026-11-03 · 11-04 30.0, 11-03 7.0</td><td>미래 제외: count 1, 최고 7(11-03)</td></tr>
+      <tr><td>T05-W07</td><td>2027-01-02 · 12-26 −9.0, 12-27 0.6, 01-01 −3.4</td><td>연 넘김: from 2026-12-27, count 2, 최저 −3.4, 최고 0.6, 평균 −1.4</td></tr>
+      <tr><td>T05-W08</td><td>2026-11-03 · 10-31 8, 11-01 10, 11-02 8, 11-03 10</td><td>동점은 최근 날짜: 최저 8(11-02), 최고 10(11-03), 평균 9</td></tr>
+      <tr><td>T05-W09</td><td>2026-11-03 · 11-02 10 °C, 11-03 50 °F</td><td><code>unit_mismatch</code>, count 2, unit/min/max/avg null</td></tr>
+      <tr><td>T05-W10</td><td>W03 과 같은 입력 · <code>fmtWeek</code></td><td><code>최저 9.8 °C · 최고 14.2 °C · 평균 11.8 °C · 7일 중 3일 기록</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="log">2. 작업 기록 (A 시작 → A 인계 → B 시작 → B 완료)</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>이벤트</th><th>시각 (KST)</th><th>소스 버전</th><th>결과</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>검사 10개·공통 상한 고정</td><td>11-03 14:02</td><td><code>e9463b2</code></td><td>기준 실행 0/10 (작업 전, 오류 수 제외)</td></tr>
+      <tr><td>1</td><td>AI A 시작</td><td>11-03 14:14</td><td><code>e9463b2</code></td><td>—</td></tr>
+      <tr><td>2</td><td>AI A 종료·인수인계</td><td>11-03 14:16</td><td><code>7745388</code></td><td>7/10 PASS, <a href="HANDOFF.md">HANDOFF.md</a></td></tr>
+      <tr><td>3</td><td>AI B 시작</td><td>11-03 14:18</td><td><code>7745388</code></td><td>받은 것: 저장소 + HANDOFF.md</td></tr>
+      <tr><td>4</td><td>AI B 종료</td><td>11-03 14:51</td><td><code>edf8e28</code></td><td>10/10 PASS (화면 연결 결함 — 4절)</td></tr>
+      <tr><td>5</td><td>B 종료 뒤 수정 (A·B 작업량 아님)</td><td>11-03 15:00</td><td><code>c013ddf</code></td><td>화면 복구, 10/10 PASS 유지</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">상세: <a href="LOG.md">t05/LOG.md</a> · 실행 결과 원본: <a href="results/A-run1.json">A-run1.json</a>, <a href="results/B-run1.json">B-run1.json</a></p>
+
+  <h2 id="compare">3. 이름을 가린 비교표 (판정 구간)</h2>
+  <p class="muted">이 구간에서는 서비스·모델 이름을 쓰지 않습니다. 오류 수 = 고정 검사 10개를 실행한 회차 중 FAIL 이 하나라도 나온 회차 수.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>항목</th><th>AI A</th><th>AI B</th><th>공통 상한</th></tr></thead>
+    <tbody>
+      <tr><td>맡은 범위</td><td>기간·최저·최고·평균 계산 (계획한 중단 지점)</td><td>동점·단위 섞임·문구·화면 연결</td><td>—</td></tr>
+      <tr><td>실제 작업시간</td><td class="num">2분 (14:14–14:16)</td><td class="num">33분 (14:18–14:51)</td><td>60분 이하 · <span class="ok">둘 다 지킴</span></td></tr>
+      <tr><td>실제 요청 수</td><td class="num">2회</td><td class="num">10회</td><td>12회 이하 · <span class="ok">둘 다 지킴</span></td></tr>
+      <tr><td>검사 실행 회차</td><td class="num">1회</td><td class="num">1회</td><td>—</td></tr>
+      <tr><td>오류 수 (FAIL 이 나온 회차)</td><td class="num">1 <span class="muted">(계획대로 3개 남김)</span></td><td class="num">0</td><td>—</td></tr>
+      <tr><td>종료 시 검사 통과 수</td><td class="num">7/10</td><td class="num"><span class="ok">10/10</span></td><td>—</td></tr>
+      <tr><td>검사 밖 결함</td><td>없음</td><td><span class="bad">있음</span> — 화면 ② 일별 기록 0건, 요약 "기록 없음", today 규칙 위반</td><td>—</td></tr>
+      <tr><td>시작 → 종료 소스 버전</td><td><code>e9463b2</code> → <code>7745388</code></td><td><code>7745388</code> → <code>edf8e28</code></td><td>재작업량은 제출 뒤 채점기가 이 쌍으로 계산 (수기 입력 안 함)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="handoff">4. 인수인계 확인</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>확인 항목</th><th>결과</th></tr></thead>
+    <tbody>
+      <tr><td>7항목 (목표·현재 상태·실행 명령·통과 검사·남은 문제·다음 행동·건드리지 말 것)</td><td class="ok">7/7 — <a href="HANDOFF.md">HANDOFF.md</a> 1~7절</td></tr>
+      <tr><td>문서의 버전 ID = 실제 저장소 버전</td><td class="ok">일치 — 문서의 <code>c34e98c2cc66…40fa</code> 가 저장소에 존재, 그 뒤 인계 커밋까지 <code>src/</code> 변경 0줄</td></tr>
+      <tr><td>새 작업 폴더 재현</td><td class="ok">성공 — 빈 폴더에 clone → 문서 3절 명령 → 7/10 PASS, 같은 검사 지문</td></tr>
+      <tr><td>A가 남긴 문서 = B가 받은 문서</td><td class="ok">동일 — <code>7745388</code> 과 <code>edf8e28</code> 의 HANDOFF.md SHA-256 모두 <code>bef114e1…8a78</code></td></tr>
+      <tr><td>B에 준 것</td><td>최초 요청 + 저장소 파일 + HANDOFF.md 만 (앞 대화 전문 없음)</td></tr>
+      <tr><td>인수인계 누락</td><td>B 시작 전 1건 수정: Windows 에서 <code>python</code> 대신 <code>py</code> (새 폴더 재현 중 발견, 수정 전후 LOG 기록). B 작업 중 보고된 누락: 없음</td></tr>
+      <tr><td>고정 검사 삭제 · 완화 · 기대값 변경</td><td class="ok">0 · 0 · 0 — <code>git diff e9463b2 edf8e28 -- t05/checks.js t05/run.js t05/run-checks.mjs t05/checks.html t05/PLAN.md</code> 0줄</td></tr>
+    </tbody>
+  </table></div>
+  <details style="margin-top:10px"><summary>B가 남긴 검사 밖 결함과 처리</summary>
+    <p>B가 화면을 연결하면서 <code>src/app.js</code> 의 <code>renderDaily() {</code> 를 <code>renderDaily() {}</code> 로 바꾸고 끝 괄호를 지웠습니다. 고정 검사는 <code>src/week.js</code> 함수만 보기 때문에 10/10 PASS 였지만, 실제 정보판은 일별 기록 0건·요약 "최근 7일 기록 없음"이 되었습니다. 요약의 today 도 PLAN 규칙(페이지를 연 시각의 한국 날짜) 대신 마지막 기록 날짜를 썼습니다. B 상한 밖에서 별도 커밋 <code>c013ddf</code> 로 고쳤고, 이 수정은 A·B 어느 쪽 작업량에도 넣지 않았습니다.</p>
+  </details>
+
+  <h2 id="rule">5. 다음 작업의 도구 선택 기준</h2>
+  <p class="rule">기대값이 검사로 고정된 순수 계산은 어느 도구에 맡겨도 되지만, 기존 파일을 고쳐 화면에 연결하는 일은 저장소를 직접 읽고 실행해 볼 수 있는 도구에 먼저 맡기고, 통과 수가 아니라 실제 화면까지 확인한 뒤 끝낸다.</p>
+  <p class="muted">근거: 3절에서 B는 검사 10/10 이었지만 검사 밖 화면 결함이 있었고, A는 저장소에서 직접 실행·재현하며 작업했습니다. 다음에는 화면 확인 검사 한 개를 고정 검사에 넣겠습니다.</p>
+
+  <h2 id="reveal">판정 뒤 공개</h2>
+  <p>AI A = Claude (Claude Code, 저장소 직접 작업) · AI B = Gemini (웹 대화, 파일 첨부) — 서로 다른 서비스</p>
+  <p class="muted">소스: <a href="https://github.com/Lee-Minsoo6944/t04-real-information-board">github.com/Lee-Minsoo6944/t04-real-information-board</a> · 정보판: <a href="../">대전 기온 정보판</a></p>
+</main>
+</body>
+</html>
