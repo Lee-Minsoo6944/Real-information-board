@@ -16,12 +16,15 @@ export function weekSummary(rows, today) {
     .sort((a, b) => a.record_date.localeCompare(b.record_date));
   if (!inWeek.length) return { state: 'empty', count: 0, unit: null, min: null, max: null, avg: null, from, to };
 
-  // TODO(B): 단위가 섞이면 state 'unit_mismatch' (T05-W09)
-  // TODO(B): 같은 값이 여러 날이면 더 최근 날짜 (T05-W08) — 지금은 먼저 나온(이른) 날짜가 남음
+  const units = new Set(inWeek.map((r) => r.unit));
+  if (units.size > 1) {
+    return { state: 'unit_mismatch', count: inWeek.length, unit: null, min: null, max: null, avg: null, from, to };
+  }
+
   let min = inWeek[0], max = inWeek[0], sum = 0;
   for (const r of inWeek) {
-    if (r.normalized_value < min.normalized_value) min = r;
-    if (r.normalized_value > max.normalized_value) max = r;
+    if (r.normalized_value < min.normalized_value || (r.normalized_value === min.normalized_value && r.record_date > min.record_date)) min = r;
+    if (r.normalized_value > max.normalized_value || (r.normalized_value === max.normalized_value && r.record_date > max.record_date)) max = r;
     sum += r.normalized_value;
   }
   return {
@@ -35,4 +38,8 @@ export function weekSummary(rows, today) {
   };
 }
 
-// TODO(B): fmtWeek(summary) — 문구 규칙은 t05/PLAN.md 1절, 기대값은 T05-W10
+export function fmtWeek(summary) {
+  if (summary.state === 'empty') return '최근 7일 기록 없음';
+  if (summary.state === 'unit_mismatch') return '최근 7일 단위가 섞여 계산할 수 없음';
+  return `최저 ${summary.min.value} ${summary.unit} · 최고 ${summary.max.value} ${summary.unit} · 평균 ${summary.avg} ${summary.unit} · 7일 중 ${summary.count}일 기록`;
+}
