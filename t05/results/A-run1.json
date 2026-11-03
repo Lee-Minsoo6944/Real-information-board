@@ -1,0 +1,174 @@
+{
+  "run_at": "2026-11-03T06:32:25.465Z",
+  "checks_sha256": "f3711bb7375f7c5db4926536222d673cc654f49afc7eaf7464e04784cf54ecd1",
+  "total": 10,
+  "passed": 7,
+  "failed": 3,
+  "any_fail": true,
+  "results": [
+    {
+      "id": "T05-W01",
+      "pass": true,
+      "actual": {
+        "state": "empty",
+        "count": 0,
+        "min": null,
+        "max": null,
+        "avg": null,
+        "from": "2026-10-28",
+        "to": "2026-11-03"
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W02",
+      "pass": true,
+      "actual": {
+        "state": "ok",
+        "count": 1,
+        "unit": "°C",
+        "min": {
+          "value": 12.3,
+          "date": "2026-11-03"
+        },
+        "max": {
+          "value": 12.3,
+          "date": "2026-11-03"
+        },
+        "avg": 12.3
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W03",
+      "pass": true,
+      "actual": {
+        "state": "ok",
+        "count": 3,
+        "unit": "°C",
+        "min": {
+          "value": 9.8,
+          "date": "2026-11-02"
+        },
+        "max": {
+          "value": 14.2,
+          "date": "2026-11-01"
+        },
+        "avg": 11.8
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W04",
+      "pass": true,
+      "actual": {
+        "state": "ok",
+        "count": 2,
+        "min": {
+          "value": 5,
+          "date": "2026-10-28"
+        },
+        "max": {
+          "value": 7,
+          "date": "2026-11-03"
+        },
+        "avg": 6
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W05",
+      "pass": true,
+      "actual": {
+        "state": "ok",
+        "count": 1,
+        "min": {
+          "value": 7,
+          "date": "2026-11-03"
+        },
+        "max": {
+          "value": 7,
+          "date": "2026-11-03"
+        },
+        "avg": 7
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W06",
+      "pass": true,
+      "actual": {
+        "state": "ok",
+        "count": 1,
+        "max": {
+          "value": 7,
+          "date": "2026-11-03"
+        }
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W07",
+      "pass": true,
+      "actual": {
+        "state": "ok",
+        "count": 2,
+        "from": "2026-12-27",
+        "to": "2027-01-02",
+        "min": {
+          "value": -3.4,
+          "date": "2027-01-01"
+        },
+        "max": {
+          "value": 0.6,
+          "date": "2026-12-27"
+        },
+        "avg": -1.4
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W08",
+      "pass": false,
+      "actual": {
+        "state": "ok",
+        "count": 4,
+        "min": {
+          "value": 8,
+          "date": "2026-10-31"
+        },
+        "max": {
+          "value": 10,
+          "date": "2026-11-01"
+        },
+        "avg": 9
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W09",
+      "pass": false,
+      "actual": {
+        "state": "ok",
+        "count": 2,
+        "unit": "°C",
+        "min": {
+          "value": 10,
+          "date": "2026-11-02"
+        },
+        "max": {
+          "value": 50,
+          "date": "2026-11-03"
+        },
+        "avg": 30
+      },
+      "error": null
+    },
+    {
+      "id": "T05-W10",
+      "pass": false,
+      "actual": null,
+      "error": "fmtWeek 함수가 없음"
+    }
+  ]
+}
