@@ -267,6 +267,28 @@
         "record_date": "2026-11-10"
       },
       "raw_file": "data/raw/2026-11-10.json"
+    },
+    {
+      "record_id": "daejeon-temperature-2m-2026-11-11",
+      "signal_id": "daejeon-temperature-2m",
+      "record_date": "2026-11-11",
+      "normalized_value": 7,
+      "unit": "°C",
+      "first_fetched_at": "2026-11-11T00:27:29.794Z",
+      "last_fetched_at": "2026-11-11T00:27:29.794Z",
+      "success_count": 1,
+      "reading": {
+        "signal_id": "daejeon-temperature-2m",
+        "normalized_value": 7,
+        "unit": "°C",
+        "source_name": "Open-Meteo Forecast API",
+        "source_url": "https://api.open-meteo.com/v1/forecast?latitude=36.3504&longitude=127.3845&current=temperature_2m&timezone=Asia%2FSeoul",
+        "source_time": "2026-11-11T09:15:00+09:00",
+        "fetched_at": "2026-11-11T00:27:29.794Z",
+        "record_timezone": "Asia/Seoul",
+        "record_date": "2026-11-11"
+      },
+      "raw_file": "data/raw/2026-11-11.json"
     }
   ]
 }
