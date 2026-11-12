@@ -1,17 +1,17 @@
 {
   "kospi": {
     "last_good": {
-      "value": 5375.36,
+      "value": 5373.18,
       "unit": "pt",
-      "prev_close": 5239.13,
-      "change": 136.23,
+      "prev_close": 5375.36,
+      "change": -2.18,
       "source_name": "Yahoo Finance (비공식 공개 시세)",
       "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?range=1d&interval=1d",
-      "source_time": "2026-11-11T06:33:00.000Z",
-      "fetched_at": "2026-11-11T07:27:16.168Z"
+      "source_time": "2026-11-12T01:04:40.000Z",
+      "fetched_at": "2026-11-12T01:24:47.585Z"
     },
     "last_attempt": {
-      "at": "2026-11-11T07:27:16.168Z",
+      "at": "2026-11-12T01:24:47.585Z",
       "outcome": "success",
       "error_code": "none",
       "detail": ""
